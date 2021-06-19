@@ -6,7 +6,13 @@ import './Network.css';
 function makeNode(num) {
     return {
         id: num,
-        label: num
+        label: `${num}`,
+        size: 10,
+        shape: "dot",
+        font: {
+            face: "Arial",
+            align: "center"
+        }
     }
 }
 
@@ -29,9 +35,9 @@ export default class Network extends Component {
                 enabled: true,
                 sortMethod: 'directed',
                 shakeTowards: 'roots',
-                direction: 'DU',
-                nodeSpacing: 150,
-                levelSeparation: 280,
+                direction: 'UD',
+                nodeSpacing: 30,
+                levelSeparation: 100,
             },
         },
         nodes: {
@@ -45,6 +51,7 @@ export default class Network extends Component {
             maxVelocity: 30,
             hierarchicalRepulsion: {
                 centralGravity: 1,
+                nodeDistance: 70,
             },
         },
     }
@@ -53,25 +60,24 @@ export default class Network extends Component {
 
     }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            numberOfNodes: 10,
-            rules: {
-
-            }
-        }
+    // get "destination" of number; ie get the value to which
+    // the number maps to under rules
+    getDestination(num) {
+        // "pair" of a and b that corresponds to num
+        const pair = this.props.rules[num % this.props.k];
+        return pair.a * num + pair.b;
     }
 
     makeGraph() {
         return {
             nodes: Array.from(
-                { length: this.state.numberOfNodes },
-                (v, i) => makeNode(i)
+                { length: this.props.numberOfNodes },
+                (v, i) => makeNode(i+1)
             ),
-            edges: [
-                makeEdge(1,2)
-            ]
+            edges: Array.from(
+                { length: this.props.numberOfNodes },
+                (v, i) => makeEdge(i+2, this.getDestination(i+2))
+            ),
         }
     }
 
@@ -81,6 +87,7 @@ export default class Network extends Component {
                 graph={this.makeGraph()}
                 options={this.options}
                 events={this.events}
+                getNetwork={network => this.setState({network})}
             />
         )
     }
