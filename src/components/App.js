@@ -14,8 +14,11 @@ export default class App extends Component {
     this.state = {
       numberOfNodes: 5,
       rules: [
-        { a: 0.5, b: 0 },
-        { a: 3, b: 1 }
+        // { a: 0.5, b: 0 },
+        // { a: 3, b: 1 }
+        {a: 1/3, b: 0},
+        {a: 4, b: 2},
+        {a: 2, b: -1},
       ]
     }
   }
@@ -47,7 +50,7 @@ export default class App extends Component {
           <Col>
             <Form>
               <Form.Group controlId="Number of Nodes">
-                <Form.Label>Number of Nodes</Form.Label>
+                <Form.Label>Test numbers up to: </Form.Label>
                 <Form.Control onChange={
                   (result) => {
                     try {

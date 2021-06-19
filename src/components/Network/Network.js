@@ -15,7 +15,7 @@ function makeNode(num, index, length) {
             face: "Arial",
             align: "center"
         },
-        color: make_color((parseInt(index)+1)/(length+1), 0.6, 0.99)
+        color: make_color((parseInt(index) + 1) / (length + 1), 0.6, 0.99)
     }
 }
 
@@ -61,7 +61,7 @@ export default class Network extends Component {
         physics: {
             enabled: true,
             minVelocity: 0.05,
-            maxVelocity: 30,
+            maxVelocity: 50,
             hierarchicalRepulsion: {
                 centralGravity: 1,
                 nodeDistance: 70,
@@ -98,8 +98,10 @@ export default class Network extends Component {
             { length: this.props.numberOfNodes },
             (v, i) => i + 1
         ));
+        console.log(currentList);
         // initialize result set
-        var result = new Set();
+        var result = this.props.numberOfNodes === 1 ? new Set() : new Set([this.props.numberOfNodes]);
+
         // while current list is not empty (ie graph is still "open")
         while (currentList.size !== 0) {
             // choose a "trailing" element from the currenet list
@@ -114,8 +116,11 @@ export default class Network extends Component {
             }
             // otherwise, we need to add the new destination to our graph
             else {
+                currentList.delete(num);
                 currentList.add(dest);
                 result.add(dest);
+                if (num !== 1) result.add(num);
+
             }
         }
 
@@ -124,7 +129,8 @@ export default class Network extends Component {
     }
 
     makeGraph() {
-        const nodeList = this.buildTree(this.props.numberOfNodes).sort();
+        const nodeList = this.buildTree(this.props.numberOfNodes).sort((a, b) => a - b);
+        console.log(nodeList);
         var nodes = [makeNode(1, -1, nodeList.length)];
         var edges = [];
         for (let i in nodeList) {
@@ -134,7 +140,7 @@ export default class Network extends Component {
         }
         console.log(nodes, edges);
 
-        this.setState(({graph}) => {
+        this.setState(({ graph }) => {
             return {
                 graph: {
                     nodes: nodes,
@@ -145,14 +151,13 @@ export default class Network extends Component {
     }
 
     render() {
-        console.log(this.state.graph);
         return (
             <Graph
                 key={Math.random()}
                 graph={this.state.graph}
                 options={this.options}
                 events={this.events}
-                // getNetwork={network => this.setState({ network })}
+            // getNetwork={network => this.setState({ network })}
             />
         )
     }
