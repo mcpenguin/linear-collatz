@@ -3,8 +3,9 @@ import Graph from 'react-graph-vis';
 import make_color from './color-helper';
 import './Network.css';
 
-// make node object with value num
-function makeNode(num, noOfNodes) {
+// make node object with max number maxNo
+// with index in the nodeList and length of nodeList
+function makeNode(num, index, length) {
     return {
         id: num,
         label: `${num}`,
@@ -14,7 +15,7 @@ function makeNode(num, noOfNodes) {
             face: "Arial",
             align: "center"
         },
-        color: make_color(.2, 0.6, 0.99)
+        color: make_color(index/length, 0.6, 0.99)
     }
 }
 
@@ -29,11 +30,6 @@ function makeEdge(num1, num2) {
     }
 }
 
-// get union of two arrays
-function union(arr1, arr2) {
-    return [...new Set([...arr1, ...arr2])];
-}
-
 export default class Network extends Component {
 
     options = {
@@ -42,7 +38,7 @@ export default class Network extends Component {
                 enabled: true,
                 sortMethod: 'directed',
                 shakeTowards: 'roots',
-                direction: 'UD',
+                direction: 'LR',
                 nodeSpacing: 30,
                 levelSeparation: 100,
             },
@@ -67,10 +63,6 @@ export default class Network extends Component {
 
     }
 
-    componentDidMount() {
-        console.log(this.buildTree(10));
-    }
-
     // get "destination" of number; ie get the value to which
     // the number maps to under rules
     getDestination(num) {
@@ -86,7 +78,6 @@ export default class Network extends Component {
             { length: this.props.numberOfNodes },
             (v, i) => i + 1
         ));
-        console.log(currentList);
         // initialize result set
         var result = new Set();
         // while current list is not empty (ie graph is still "open")
@@ -106,7 +97,6 @@ export default class Network extends Component {
                 currentList.add(dest);
                 result.add(dest);
             }
-            console.log(currentList);
         }
 
         // return list of nodes as an array
@@ -114,7 +104,15 @@ export default class Network extends Component {
     }
 
     makeGraph() {
-        const nodeList = this.buildTree(this.props.numberOfNodes);
+        const nodeList = this.buildTree(this.props.numberOfNodes).sort();
+        var nodes = [makeNode(1, 0, nodeList.length)];
+        var edges = [];
+        for (let i in nodeList) {
+            const e = nodeList[i];
+            nodes.push(makeNode(e, i, nodeList.length));
+            edges.push(makeEdge(e, this.getDestination(e)));
+        }
+
         return {
             // nodes: Array.from(
             //     { length: this.props.numberOfNodes },
@@ -124,8 +122,8 @@ export default class Network extends Component {
             //     { length: this.props.numberOfNodes },
             //     (v, i) => makeEdge(i + 2, this.getDestination(i + 2))
             // ),
-            nodes: [1, ...nodeList].map(makeNode),
-            edges: nodeList.map((i) => makeEdge(i, this.getDestination(i)))
+            nodes: nodes,
+            edges: edges
         }
     }
 
