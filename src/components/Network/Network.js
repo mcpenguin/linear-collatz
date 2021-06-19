@@ -15,7 +15,7 @@ function makeNode(num, index, length) {
             face: "Arial",
             align: "center"
         },
-        color: make_color(index/length, 0.6, 0.99)
+        color: make_color((parseInt(index)+1)/(length+1), 0.6, 0.99)
     }
 }
 
@@ -31,6 +31,16 @@ function makeEdge(num1, num2) {
 }
 
 export default class Network extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            graph: {
+                nodes: [],
+                edges: []
+            }
+        }
+    }
 
     options = {
         layout: {
@@ -61,6 +71,16 @@ export default class Network extends Component {
 
     events = {
 
+    }
+
+    componentDidMount() {
+        this.makeGraph();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (Number.isInteger(this.props.numberOfNodes) && prevProps.numberOfNodes !== this.props.numberOfNodes) {
+            this.makeGraph();
+        }
     }
 
     // get "destination" of number; ie get the value to which
@@ -105,27 +125,34 @@ export default class Network extends Component {
 
     makeGraph() {
         const nodeList = this.buildTree(this.props.numberOfNodes).sort();
-        var nodes = [makeNode(1, 0, nodeList.length)];
+        var nodes = [makeNode(1, -1, nodeList.length)];
         var edges = [];
         for (let i in nodeList) {
             const e = nodeList[i];
             nodes.push(makeNode(e, i, nodeList.length));
             edges.push(makeEdge(e, this.getDestination(e)));
         }
+        console.log(nodes, edges);
 
-        return {
-            nodes: nodes,
-            edges: edges
-        }
+        this.setState(({graph}) => {
+            return {
+                graph: {
+                    nodes: nodes,
+                    edges: edges
+                }
+            }
+        })
     }
 
     render() {
+        console.log(this.state.graph);
         return (
             <Graph
-                graph={this.makeGraph()}
+                key={Math.random()}
+                graph={this.state.graph}
                 options={this.options}
                 events={this.events}
-                getNetwork={network => this.setState({ network })}
+                // getNetwork={network => this.setState({ network })}
             />
         )
     }

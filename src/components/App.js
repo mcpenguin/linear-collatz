@@ -1,10 +1,24 @@
 import { Component } from 'react';
+
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+
 import Network from './Network/Network';
 
 export default class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      numberOfNodes: 5,
+      rules: [
+        { a: 0.5, b: 0 },
+        { a: 3, b: 1 }
+      ]
+    }
+  }
 
   render() {
     return (
@@ -22,19 +36,32 @@ export default class App extends Component {
           <Col>
             <div id="network">
               <Network
-                k={2}
-                numberOfNodes={20}
-                rules={[
-                  { a: 0.5, b: 0 },
-                  { a: 3, b: 1 }
-                ]}
+                k={this.state.rules.length}
+                numberOfNodes={this.state.numberOfNodes}
+                rules={this.state.rules}
               />
             </div>
           </Col>
         </Row>
         <Row>
           <Col>
-            
+            <Form>
+              <Form.Group controlId="Number of Nodes">
+                <Form.Label>Number of Nodes</Form.Label>
+                <Form.Control onChange={
+                  (result) => {
+                    try {
+                      this.setState(({ numberOfNodes }) => {
+                        console.log(result.target.value);
+                        return {
+                          numberOfNodes: parseInt(result.target.value)
+                        }
+                      })
+                    } catch (e) {}
+                  }
+                } />
+              </Form.Group>
+            </Form>
           </Col>
         </Row>
       </Container>
