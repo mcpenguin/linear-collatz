@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import Graph from 'react-graph-vis';
+import make_color from './color-helper';
 import './Network.css';
 
 // make node object with value num
-function makeNode(num) {
+function makeNode(num, noOfNodes) {
     return {
         id: num,
         label: `${num}`,
@@ -12,7 +13,8 @@ function makeNode(num) {
         font: {
             face: "Arial",
             align: "center"
-        }
+        },
+        color: make_color((num-1)/noOfNodes, 0.6, 0.99)
     }
 }
 
@@ -23,7 +25,7 @@ function makeEdge(num1, num2) {
         from: num1,
         to: num2,
         arrows: 'to',
-        color: "inherit"
+        color: "#cccccc"
     }
 }
 
@@ -31,14 +33,14 @@ export default class Network extends Component {
 
     options = {
         layout: {
-            hierarchical: {
-                enabled: true,
-                sortMethod: 'directed',
-                shakeTowards: 'roots',
-                direction: 'UD',
-                nodeSpacing: 30,
-                levelSeparation: 100,
-            },
+            // hierarchical: {
+            //     enabled: true,
+            //     sortMethod: 'directed',
+            //     shakeTowards: 'roots',
+            //     direction: 'UD',
+            //     nodeSpacing: 30,
+            //     levelSeparation: 200,
+            // },
         },
         nodes: {
             font: {
@@ -72,7 +74,7 @@ export default class Network extends Component {
         return {
             nodes: Array.from(
                 { length: this.props.numberOfNodes },
-                (v, i) => makeNode(i+1)
+                (v, i) => makeNode(i+1, this.props.numberOfNodes)
             ),
             edges: Array.from(
                 { length: this.props.numberOfNodes },
