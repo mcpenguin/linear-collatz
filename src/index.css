@@ -1,4 +1,16 @@
+body {
+  font-family: 'Nunito', 'Arial';
+}
+
+#root {
+  padding: 10px 20px;
+}
+
+.website-heading {
+  font-weight: 400;
+}
+
 #network {
   width: 100%;
-  height: 800px;
+  height: 600px;
 }

@@ -114,14 +114,6 @@ export default class Network extends Component {
         }
 
         return {
-            // nodes: Array.from(
-            //     { length: this.props.numberOfNodes },
-            //     (v, i) => makeNode(i + 1, this.props.numberOfNodes)
-            // ),
-            // edges: Array.from(
-            //     { length: this.props.numberOfNodes },
-            //     (v, i) => makeEdge(i + 2, this.getDestination(i + 2))
-            // ),
             nodes: nodes,
             edges: edges
         }
