@@ -9,10 +9,10 @@ export default class App extends Component {
         <div id="network">
           <Network 
             k={2}
-            numberOfNodes={300}
+            numberOfNodes={20}
             rules={[
               {a:0.5, b:0},
-              {a:1, b:1}
+              {a:3, b:1}
             ]}
           />
         </div>
