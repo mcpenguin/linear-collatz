@@ -136,6 +136,18 @@ export default class Network extends Component {
         const pair = this.props.rules[num % this.props.k];
         return pair.a * num + pair.b;
     }
+    
+    // return "path" for a specific number
+    buildPath(num) {
+        var result = new Set();
+        var cur = num;
+        const maxBound = this.props.maxBound;
+        while (!result.has(cur) && cur <= maxBound && cur >= -maxBound) {
+            result.add(cur);
+            cur = this.getDestination(cur);
+        }
+        return [...result];
+    }
 
     // returns the list of nodes needed for a "closed" graph
     buildTree() {
@@ -155,7 +167,6 @@ export default class Network extends Component {
             var num = [...currentList][0];
             // get its destination according to the rules
             var dest = this.getDestination(num);
-            console.log(num, dest);
             // if destination is already in the result, then we know this
             // node "links" up to the graph, and so we can remove it from the
             // current list
@@ -165,14 +176,14 @@ export default class Network extends Component {
             // overflow
             if (dest === 1 || result.has(dest) || dest >= maxBound || dest <= -maxBound) {
                 currentList.delete(num);
-                if (num !== 1) result.add(num);
+                result.add(num);
             }
             // otherwise, we need to add the new destination to our graph
             else {
                 currentList.delete(num);
                 currentList.add(dest);
                 result.add(dest);
-                if (num !== 1) result.add(num);
+                result.add(num);
             }
         }
 
@@ -183,7 +194,7 @@ export default class Network extends Component {
     makeGraph() {
         const nodeList = this.buildTree(this.props.numberOfNodes).sort((a, b) => a - b);
         console.log(nodeList);
-        var nodes = [makeNode(1, -1, nodeList.length)];
+        var nodes = [];
         var edges = [];
         for (let i in nodeList) {
             const e = nodeList[i];
@@ -204,6 +215,7 @@ export default class Network extends Component {
     }
 
     render() {
+        console.log(this.buildPath(12));
         return (
             <Graph
                 key={Math.random()}
