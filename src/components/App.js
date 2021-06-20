@@ -19,7 +19,7 @@ export default class App extends Component {
         { a: 1 / 2, b: 0 },
         { a: 3, b: 1 },
       ],
-      maxBound: 10 ** 50,
+      maxBound: 10 ** 10,
     }
   }
 
@@ -44,6 +44,7 @@ export default class App extends Component {
                 numberOfNodes={this.state.numberOfNodes}
                 rules={this.state.rules}
                 maxBound={this.state.maxBound}
+                isHierarchical={this.state.isHierarchical}
               />
             </div>
           </Col>
@@ -57,7 +58,6 @@ export default class App extends Component {
                   (result) => {
                     try {
                       this.setState(({ numberOfNodes, ...rest }) => {
-                        console.log(result.target.value);
                         return {
                           numberOfNodes: parseInt(result.target.value),
                           ...rest
@@ -69,23 +69,40 @@ export default class App extends Component {
               </Form.Group>
               <Form.Group>
                 <Form.Label>Max Bound: </Form.Label>
-                <Form.Control onChange={
-                  (result) => {
-                    try {
-                      this.setState(({ maxBound, ...rest }) => {
+                <Form.Control
+                  defaultValue={10 ** 10}
+                  onChange={
+                    (result) => {
+                      try {
+                        this.setState(({ maxBound, ...rest }) => {
+                          return {
+                            maxBound: parseInt(result.target.value),
+                            ...rest
+                          }
+                        })
+                      } catch (e) { }
+                    }
+                  } />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>View as Hierarchical Layout: (not recommended for cycles): </Form.Label>
+                <Form.Check
+                  onClick={
+                    (result) => {
+                      this.setState(({ isHierarchical, ...rest }) => {
                         return {
-                          maxBound: parseInt(result.target.value),
+                          isHierarchical: !isHierarchical,
                           ...rest
                         }
                       })
-                    } catch (e) {}
+                    }
                   }
-                } />
+                />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Number of rules: </Form.Label>
                 <Form.Control
-                  defaultValue={3}
+                  defaultValue={2}
                   onChange={
                     (result) => {
                       try {
@@ -175,7 +192,14 @@ export default class App extends Component {
                   variant="primary"
                   onClick={
                     () => {
-                      this.setState(({numberOfNodes, ...rest}) => {return {numberOfNodes: parseInt(numberOfNodes), ...rest}})
+                      try {
+                        this.setState(({ numberOfNodes, ...rest }) => {
+                          return {
+                            numberOfNodes: parseInt(numberOfNodes),
+                            ...rest
+                          }
+                        })
+                      } catch (e) { }
                     }
                   }
                 >Rerender Network</Button>

@@ -38,50 +38,95 @@ export default class Network extends Component {
             graph: {
                 nodes: [],
                 edges: []
-            }
+            },
+            options: {
+                autoResize: true,
+                layout: {
+                    improvedLayout: true,
+                    ...(this.props.hierarchical
+                        ? {
+                            hierarchical: {
+                                enabled: true,
+                                sortMethod: 'directed',
+                                shakeTowards: 'roots',
+                                direction: 'LR',
+                                nodeSpacing: 30,
+                                levelSeparation: 100,
+                            }
+                        }
+                        : {}
+                    ),
+                },
+                nodes: {
+                    font: {
+                        multi: 'html',
+                    },
+                },
+                physics: {
+                    enabled: true,
+                    minVelocity: 0.05,
+                    maxVelocity: 50,
+                    hierarchicalRepulsion: {
+                        centralGravity: 1,
+                        nodeDistance: 70,
+                    },
+                },
+            },
+            events: {
+
+            },
         }
     }
-
-    options = {
-        autoResize: true,
-        layout: {
-            hierarchical: {
-                enabled: true,
-                sortMethod: 'directed',
-                shakeTowards: 'roots',
-                direction: 'LR',
-                nodeSpacing: 30,
-                levelSeparation: 100,
-            },
-        },
-        nodes: {
-            font: {
-                multi: 'html',
-            },
-        },
-        physics: {
-            enabled: true,
-            minVelocity: 0.05,
-            maxVelocity: 50,
-            hierarchicalRepulsion: {
-                centralGravity: 1,
-                nodeDistance: 70,
-            },
-        },
-    }
-
-    events = {
-
-    }
-
     componentDidMount() {
         this.makeGraph();
     }
 
     componentDidUpdate(prevProps) {
-        if (Number.isInteger(this.props.numberOfNodes) && prevProps.numberOfNodes !== this.props.numberOfNodes) {
+        if (prevProps.isHierarchical !== this.props.isHierarchical || (Number.isInteger(this.props.numberOfNodes) && prevProps.numberOfNodes !== this.props.numberOfNodes)) {
             this.makeGraph();
+            this.makeOptions();
         }
+    }
+
+    makeOptions() {
+        this.setState(({options, ...rest}) => {
+            return {
+                options: {
+                    autoResize: true,
+                    layout: {
+                        improvedLayout: true,
+                        ...(this.props.isHierarchical
+                            ? {
+                                hierarchical: {
+                                    enabled: true,
+                                    sortMethod: 'directed',
+                                    shakeTowards: 'roots',
+                                    direction: 'LR',
+                                    nodeSpacing: 30,
+                                    levelSeparation: 100,
+                                }
+                            }
+                            : {}
+                        ),
+                    },
+                    nodes: {
+                        font: {
+                            multi: 'html',
+                        },
+                    },
+                    physics: {
+                        enabled: true,
+                        minVelocity: 0.05,
+                        maxVelocity: 50,
+                        hierarchicalRepulsion: {
+                            centralGravity: 1,
+                            nodeDistance: 70,
+                        },
+                    },
+                },
+                ...rest
+            }
+        })
     }
 
     // get "destination" of number; ie get the value to which
@@ -147,12 +192,13 @@ export default class Network extends Component {
         }
         console.log(nodes, edges);
 
-        this.setState(({ graph }) => {
+        this.setState(({ graph, ...rest }) => {
             return {
                 graph: {
                     nodes: nodes,
                     edges: edges
-                }
+                },
+                ...rest
             }
         })
     }
@@ -162,8 +208,8 @@ export default class Network extends Component {
             <Graph
                 key={Math.random()}
                 graph={this.state.graph}
-                options={this.options}
-                events={this.events}
+                options={this.state.options}
+                events={this.state.events}
             // getNetwork={network => this.setState({ network })}
             />
         )
