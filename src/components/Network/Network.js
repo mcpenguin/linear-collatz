@@ -215,7 +215,6 @@ export default class Network extends Component {
     }
 
     render() {
-        console.log(this.buildPath(12));
         return (
             <Graph
                 key={Math.random()}
