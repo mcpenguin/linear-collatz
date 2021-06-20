@@ -43,6 +43,7 @@ export default class Network extends Component {
     }
 
     options = {
+        autoResize: true,
         layout: {
             hierarchical: {
                 enabled: true,
@@ -101,18 +102,25 @@ export default class Network extends Component {
         console.log(currentList);
         // initialize result set
         var result = this.props.numberOfNodes === 1 ? new Set() : new Set([this.props.numberOfNodes]);
-
+        // get max bound
+        const maxBound = this.props.maxBound;
         // while current list is not empty (ie graph is still "open")
         while (currentList.size !== 0) {
             // choose a "trailing" element from the currenet list
             var num = [...currentList][0];
             // get its destination according to the rules
             var dest = this.getDestination(num);
+            console.log(num, dest);
             // if destination is already in the result, then we know this
             // node "links" up to the graph, and so we can remove it from the
             // current list
-            if (dest === 1 || result.has(dest)) {
+            // if destination is 1, then we 'stop' since this is also a
+            // desired result
+            // if destination exceeds the max bound, then we stop as well to avoid
+            // overflow
+            if (dest === 1 || result.has(dest) || dest >= maxBound || dest <= -maxBound) {
                 currentList.delete(num);
+                if (num !== 1) result.add(num);
             }
             // otherwise, we need to add the new destination to our graph
             else {
@@ -120,7 +128,6 @@ export default class Network extends Component {
                 currentList.add(dest);
                 result.add(dest);
                 if (num !== 1) result.add(num);
-
             }
         }
 
