@@ -14,3 +14,7 @@ body {
   width: 100%;
   height: 500px;
 }
+
+.rules {
+  padding: 0 5px;
+}
