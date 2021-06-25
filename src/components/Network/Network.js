@@ -75,13 +75,6 @@ export default class Network extends Component {
             events: {
                 selectNode: (selection) => {
                     console.log(this.buildPath(selection.nodes[0]));
-                    this.setState(({graph: {nodes, edges}, ...rest}) => {
-                        return {
-                            graph: {
-
-                            }
-                        }
-                    })
                 }
             },
         }
